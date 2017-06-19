@@ -10,21 +10,6 @@
 
 #pragma once
 
-namespace test
-{
-
-	namespace lib
-	{
-		bool test_data();
-
-		bool test_io();
-
-		bool test_meta();
-	}
-
-
-	bool test_lib();
-}
 
 int main();
 
