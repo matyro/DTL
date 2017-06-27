@@ -8,20 +8,16 @@
 * 	of the LGPL license. See the LICENSE file for details.
 */
 
-#include <iostream>
-#include <string>
+#include "gtest/gtest.h"
 
+#include "io/socket_test.h"
+#include "io/dns_lookup_test.h"
+#include "io/client_test.h"
+#include "io/server_test.h"
 
-#include "test/lib/data/particle_test.h"
-
-#include "test/lib/io/socket_test.h"
-#include "test/lib/io/dns_lookup_test.h"
-#include "test/lib/io/client_test.h"
-#include "test/lib/io/server_test.h"
-
-#include "test/lib/meta/list_test.h"
-#include "test/lib/meta/tuple_test.h"
-#include "test/lib/meta/is_callable_test.h"
+#include "meta/list_test.h"
+#include "meta/tuple_test.h"
+#include "meta/is_callable_test.h"
 
 
 int main(int argc, char **argv) 
