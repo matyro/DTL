@@ -10,12 +10,10 @@
 
 #pragma once
 
-#include "lib/io/network/socket.h"
+#include "io/network/socket.h"
 
 #include <chrono>
 
-namespace lib
-{
 	namespace io
 	{
 		namespace network
@@ -89,4 +87,3 @@ namespace lib
 
 		}
 	}
-}

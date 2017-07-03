@@ -10,7 +10,7 @@
 
 #ifdef __linux__
 
-#include "lib/io/network/socket.h"
+#include "io/network/socket.h"
 
 #include <errno.h>
 #include <sys/socket.h>
@@ -21,8 +21,6 @@
 #include <iostream>
 #include <vector>
 
-namespace lib
-{
 	namespace io
 	{
 		namespace network
@@ -335,7 +333,6 @@ namespace lib
 			}
 		}
 	}
-}
 
 #endif
 

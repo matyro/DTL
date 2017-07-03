@@ -8,14 +8,12 @@
  * 	of the LGPL license. See the LICENSE file for details.
  */
 
-#include "lib/io/network/client.h"
+#include "io/network/client.h"
 
 #include <exception>
 
-#include "lib/io/io_exception.h"
+#include "io/io_exception.h"
 
-namespace lib
-{
 	namespace io
 	{
 		namespace network
@@ -74,4 +72,3 @@ namespace lib
 
 		}
 	}
-}

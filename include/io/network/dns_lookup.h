@@ -13,8 +13,6 @@
 #include <string>
 
 
-namespace lib
-{
 	namespace io
 	{
 		namespace network
@@ -28,4 +26,3 @@ namespace lib
 			std::string hostname_to_ip(const std::string p_hostname);
 		}
 	}
-}

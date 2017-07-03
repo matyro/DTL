@@ -34,13 +34,13 @@ namespace meta
             T data;
 
             template<size_t ... Ints1, size_t ... Ints2>
-            constexpr List<T, sizeof...(Ints1) + sizeof...(Ints2)> _concat(const List<T, sizeof...(Ints2)> rhs,  meta::integer_sequence<Ints1...>,  meta::integer_sequence<Ints2...>) const
+            constexpr List<T, sizeof...(Ints1) + sizeof...(Ints2)> _concat(const List<T, sizeof...(Ints2)> rhs,  lib::meta::integer_sequence<Ints1...>,  lib::meta::integer_sequence<Ints2...>) const
             {
                 return List<T, sizeof...(Ints1) + sizeof...(Ints2)>(this->get<Ints1>()..., rhs.template get<Ints2>()...);
             }
 
             template<size_t ... Ints>
-            constexpr List<T, sizeof...(Ints)> _subSection(const meta::integer_sequence<Ints...>) const
+            constexpr List<T, sizeof...(Ints)> _subSection(const lib::meta::integer_sequence<Ints...>) const
             {
                 return List<T, sizeof...(Ints)>(this->get<Ints>()...);
             }
@@ -60,7 +60,7 @@ namespace meta
             }
 
 
-            template<size_t TNum2, typename Indices1 =  meta::index_sequence_from<TNum>, typename Indices2 =  meta::index_sequence_from<TNum2>>
+            template<size_t TNum2, typename Indices1 =  lib::meta::index_sequence_from<TNum>, typename Indices2 =  lib::meta::index_sequence_from<TNum2>>
             constexpr List<T, TNum + TNum2> concat(const List<T, TNum2>& rhs) const
             {
                 return this->_concat(rhs, Indices1(), Indices2());
@@ -73,32 +73,28 @@ namespace meta
                 static_assert(TEnd >= 0, "TEnd cant be smaller then 0!");
                 static_assert(TBegin <= TNum, "TStart cant be bigger then TNum!");
                 static_assert(TEnd <= TNum, "TEnd cant be bigger then TNum!");
-                return _subSection( meta::index_sequence_from_to<TBegin, TEnd + 1>());
+                return _subSection( lib::meta::index_sequence_from_to<TBegin, TEnd + 1>());
             }
 
-            template<class TFunc, class TReturn>
-            constexpr TReturn foldr(TFunc func, TReturn init) const
+            template<class TReturn>
+            constexpr TReturn foldr(TReturn (*func)(T, const TReturn), TReturn init) const
             {
                 return List<T, TNum - 1>::foldr(func, func(data, init));
             }
 
-            template<class TFunc, class TReturn>
-            constexpr TReturn foldl(TFunc func, TReturn init) const
+            template<class TReturn>
+            constexpr TReturn foldl(TReturn (*func)(T, const TReturn), TReturn init) const
             {
                 return func(data, List<T, TNum - 1>::foldl(func, init));
             }
 
-            /// Map function over all elements of a tuple
-            /**
-            *  When Lambdas are used as function the return value is not constexpr anymore (earlier then C++17)
-            */
-            template<class TFunc, class TReturn>
-            constexpr List<TReturn, TNum> map(TFunc func) const
+            template<class TReturn>
+            constexpr List<TReturn, TNum> map(typename std::remove_const<TReturn>::type (*func)(T)) const
             {
                 // Call func on local data and add it to a list
                 // append the rest
                 //
-                return List<TReturn, 1>(func(data)).concat( dynamic_cast<const List<T, TNum - 1>*>(this)->template map<TFunc, TReturn>(func) );
+                return List<TReturn, 1>(func(data)).concat( dynamic_cast<const List<T, TNum - 1>*>(this)->template map<TReturn>(func) );
             }
 
             template<size_t TNum2>
@@ -140,7 +136,7 @@ namespace meta
             constexpr operator const List<TReturn, TNum>() const
             {
                 static_assert(std::is_convertible<TReturn, T>::value, "Cant cast into this type!");
-                return map(meta::identity);
+                return map<TReturn>(lib::meta::id);
             }
 
         };
@@ -154,13 +150,13 @@ namespace meta
             T data;
 
             template<size_t ... Ints>
-            constexpr List<T, 1 + sizeof...(Ints)> _concat(const List<T, sizeof...(Ints)> rhs, const meta::integer_sequence<Ints...>) const
+            constexpr List<T, 1 + sizeof...(Ints)> _concat(const List<T, sizeof...(Ints)> rhs, const lib::meta::integer_sequence<Ints...>) const
             {
                 return List<T, 1 + sizeof...(Ints)>(this->get<0>(), rhs.template get<Ints>()...);
             }
 
             template<size_t ... Ints>
-            constexpr List<T, sizeof...(Ints)> _subSection(const meta::integer_sequence<Ints...>) const
+            constexpr List<T, sizeof...(Ints)> _subSection(const lib::meta::integer_sequence<Ints...>) const
             {
                 return List<T, sizeof...(Ints)>(this->get<Ints>()...);
             }
@@ -180,7 +176,7 @@ namespace meta
             template<size_t TNum2>
             constexpr List<T, 1 + TNum2> concat(const List<T, TNum2>& rhs) const
             {
-                return this->_concat(rhs, meta::index_sequence_from<TNum2>());
+                return this->_concat(rhs, lib::meta::index_sequence_from<TNum2>());
             }
 
             template<size_t TBegin, size_t TEnd>
@@ -190,23 +186,23 @@ namespace meta
                 static_assert(TEnd >= 0, "TEnd cant be smaller then 0!");
                 static_assert(TBegin <= 1, "TStart cant be bigger then TNum!");
                 static_assert(TEnd <= 1, "TEnd cant be bigger then TNum!");
-                return _subSection(meta::index_sequence_from_to<TBegin, TEnd + 1>());
+                return _subSection(lib::meta::index_sequence_from_to<TBegin, TEnd + 1>());
             }
 
-            template<class TFunc, class TReturn>
-            constexpr TReturn foldr(TFunc func, TReturn init) const
+            template<class TReturn>
+            constexpr TReturn foldr(TReturn (*func)(T, const TReturn), TReturn init) const
             {
                 return func(data, init);
             }
 
-            template<class TFunc, class TReturn>
-            constexpr TReturn foldl(TFunc func, TReturn init) const
+            template<class TReturn>
+            constexpr TReturn foldl(TReturn (*func)(T, const TReturn), TReturn init) const
             {
                 return func(data, init);
             }
 
-            template<class TFunc, class TReturn>
-            constexpr List<TReturn, 1> map(TFunc func) const
+            template<class TReturn>
+            constexpr List<TReturn, 1> map(typename std::remove_const<TReturn>::type (*func)(T)) const
             {
                 return List<TReturn, 1>(func(data));
             }
@@ -277,8 +273,8 @@ namespace meta
                 return rhs;
             }
 
-            template<class TFunc, class TReturn>
-            constexpr List<TReturn, 0> map(TFunc func) const
+            template<class TReturn>
+            constexpr List<TReturn, 0> map(typename std::remove_const<TReturn>::type (*func)(T)) const
             {
                 return List<TReturn, 0>();
             }
@@ -314,7 +310,7 @@ namespace meta
         return dynamic_cast<const List<TNum - i, T>>(l).get();    }		*/
 
         template<class T, class ... TArgs>
-        constexpr List<T, sizeof...(TArgs) + 1> make_list(T arg, TArgs ... args)
+        constexpr List<T, sizeof...(TArgs)> make_list(T arg, TArgs ... args)
         {
             return List<T, sizeof...(TArgs) + 1>(arg, args...);
         }

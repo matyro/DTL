@@ -23,14 +23,12 @@
 *    A collection of different compile time resolvable identity functions mostly used in meta programing or as placeholder.
 */
 
-namespace lib
-{
 	namespace meta
 	{
 
 		/// Identity structure
 		/**
-		*	 A callable structure that returns its input exactly and is known at compiletime		
+		*	 A callable structure that returns its input exactly and is known at compiletime
 		*/
 		struct Identity
 		{
@@ -57,16 +55,8 @@ namespace lib
 		*    \return Perfect forward of the input parameter v
 		*/
 		template<typename U>
-		constexpr auto id(const U&& v) noexcept -> decltype(std::forward<U>(v))
+		constexpr auto identity(const U&& v) noexcept -> decltype(std::forward<U>(v))
 		{
 			return std::forward<U>(v);
 		}
-
-
-
-		
-	
-
 	}
-
-}

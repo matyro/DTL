@@ -8,7 +8,7 @@
  * 	of the LGPL license. See the LICENSE file for details.
  */
 
-#include "lib/io/network/server.h"
+#include "io/network/server.h"
 
 #include <stdexcept>
 #include <thread>
@@ -19,8 +19,6 @@
 #include <unistd.h>
 #endif
 
-namespace lib
-{
 	namespace io
 	{
 
@@ -32,7 +30,7 @@ namespace lib
 				while (m_isRunning.load() == true)
 				{
 					this->m_arb_listenSock.listen();
-					auto list = lib::io::network::Socket::waitFor_read({ &m_arb_listenSock }, 1000);
+					auto list = io::network::Socket::waitFor_read({ &m_arb_listenSock }, 1000);
 
 					if (list.size() == 0)
 						continue;
@@ -45,8 +43,8 @@ namespace lib
 					if (this->m_func_newConnection(sockID, tmp.get()))
 					{
 						m_vectorMutex.lock();
-						
-						this->m_std_connectionSock.insert(std::make_pair(sockID, std::move(tmp)));						
+
+						this->m_std_connectionSock.insert(std::make_pair(sockID, std::move(tmp)));
 
 						m_vectorMutex.unlock();
 					}
@@ -60,7 +58,7 @@ namespace lib
 
 					this->m_vectorMutex.lock();
 
-					std::vector<lib::io::network::Socket*> waitList;
+					std::vector<io::network::Socket*> waitList;
 
 					for (auto itr = m_std_connectionSock.begin(); itr != m_std_connectionSock.end(); itr++)
 					{
@@ -70,7 +68,7 @@ namespace lib
 
 					if (waitList.size() > 0)
 					{
-						auto recvReady = ::lib::io::network::Socket::waitFor_read(waitList, 50);
+						auto recvReady = io::network::Socket::waitFor_read(waitList, 50);
 
 						for (auto itr : recvReady)
 						{
@@ -85,16 +83,16 @@ namespace lib
 #else
 					usleep(20000);
 #endif
-					this->m_actionMutex.lock();					
-				
+					this->m_actionMutex.lock();
+
 					for (unsigned int i = 0; i < m_action.size(); i++)
 					{
-						m_action.back()(&m_std_connectionSock);						
+						m_action.back()(&m_std_connectionSock);
 						m_action.pop_back();
 					}
-					
-					this->m_actionMutex.unlock();				
-					
+
+					this->m_actionMutex.unlock();
+
 #if __cplusplus > 199711L
 					std::this_thread::sleep_for(std::chrono::milliseconds(20));
 #else
@@ -112,7 +110,7 @@ namespace lib
 				{
 					std::stringstream sstr;
 					sstr << p_port;
-					throw( std::runtime_error("Socket could not be bind to port" + sstr.str() ) );				
+					throw( std::runtime_error("Socket could not be bind to port" + sstr.str() ) );
 				}
 
 				m_isRunning = true;
@@ -126,7 +124,7 @@ namespace lib
 				this->m_threadNewCon->join();
 				this->m_threadNewData->join();
 
-				this->m_arb_listenSock.close();			
+				this->m_arb_listenSock.close();
 
 				this->m_std_connectionSock.clear();
 
@@ -137,7 +135,7 @@ namespace lib
 			void Server::send(unsigned int p_id, const uint8_t* const p_data, const unsigned int p_len)
 			{
 				auto func = [](connectionHandler* const con, unsigned int id, const uint8_t* const data, const unsigned int len)->void
-						{							
+						{
 							con->at(id)->send(data, len);
 						};
 
@@ -153,8 +151,8 @@ namespace lib
 			}
 
 			void Server::broadcast(const uint8_t* const p_data, const unsigned int p_len)
-			{				
-				auto func = [](connectionHandler* const con, const uint8_t* const data, const unsigned int len)->void{					
+			{
+				auto func = [](connectionHandler* const con, const uint8_t* const data, const unsigned int len)->void{
 					for (auto& itr : *con)
 					{
 						itr.second->send(data, len);
@@ -175,7 +173,7 @@ namespace lib
 			void Server::disconnect(unsigned int p_id)
 			{
 				auto func = [](connectionHandler* const con, unsigned int id)->void
-						{							
+						{
 							con->erase(id);
 						};
 
@@ -187,4 +185,3 @@ namespace lib
 
 		}
 	}
-}

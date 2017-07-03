@@ -5,7 +5,7 @@ cmake_minimum_required(VERSION 2.8)
 
 # Project's name
 
-project(DTL)
+project(DTL CXX)
 
 set (DTL_VERSION_MAJOR 1)
 set (DTL_VERSION_MINOR 0)
@@ -36,15 +36,40 @@ include_directories("${CMAKE_SOURCE_DIR}/include")
 include_directories("${CMAKE_SOURCE_DIR}/test")
 
 
+# Set Compiler Version
+set (CMAKE_CXX_STANDARD 14)
+# Set shared compiler flags
+set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -g -Wall -Wextra -pedantic -pedantic-errors")
 
+
+# Add library tuple
+#file(GLOB tuple_SRC
+#    "${CMAKE_SOURCE_DIR}/include/meta/tuple/*.h"
+#    "${CMAKE_SOURCE_DIR}/src/meta/tuple/*.cpp"
+#)
+#add_library(tuple_lib STATIC "${tuple_SRC}")
+
+# Add library network
+file(GLOB network_SRC
+    "${CMAKE_SOURCE_DIR}/include/io/network/*.h"
+    "${CMAKE_SOURCE_DIR}/src/io/network/*.cpp"
+)
+add_library(network_lib STATIC "${network_SRC}")
+
+
+# Find gtest and add it to directory
+enable_testing()
+find_package(GTest REQUIRED)
+include_directories(${GTEST_INCLUDE_DIRS})
 
 # Add UnitTest
 add_executable(unit_test "${CMAKE_SOURCE_DIR}/test/unit_test.cpp")
 
-find_library(GTEST_LIB gtest)
-target_link_libraries(unit_test "${GTEST_LIB}")
+target_link_libraries(unit_test ${GTEST_BOTH_LIBRARIES})
 
-find_path(GTEST_INCLUDE gtest)
-message(STATUS "Add directory ${GTEST_INCLUDE}")
-include_directories(unit_test "${GTEST_INCLUDE}")
+find_package (Threads)
+target_link_libraries(unit_test "${CMAKE_THREAD_LIBS_INIT}")
+
+target_link_libraries(unit_test network_lib)
+
 

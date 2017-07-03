@@ -23,8 +23,6 @@
 #include <mutex>
 
 
-namespace lib
-{
 	namespace io
 	{
 		namespace network
@@ -117,4 +115,4 @@ namespace lib
 
 		}
 	}
-}
+

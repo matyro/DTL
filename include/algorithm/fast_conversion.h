@@ -12,37 +12,29 @@
 
 #include <string>
 
-namespace lib
+
+namespace algorithm
 {
-	namespace algorithm
-	{
 
-		/// Fast conversion to string
-		/**
-		*   Generic conversion function
-		*	\tparam T Type of parameter to convert
-		*   \param obj Object contains the data to convert
-		*/
-		template<class TType>
-		inline const std::string toString(const TType& p_obj);
+    /// Fast conversion to string
+    /**
+    *   Generic conversion function
+    *	\tparam T Type of parameter to convert
+    *   \param obj Object contains the data to convert
+    */
+    template<class TType>
+    inline const std::string toString(const TType& p_obj);
 
-		/// Fast conversion to string (float specialisation)
-		/**
-		*   fast conversion from float to string
-		*	\param obj Object contains the data to convert 
-		*/
-		template<>
-		inline const std::string toString<float>(const float& p_obj)
-		{
-			// http://dl.acm.org/citation.cfm?doid=1809028.1806623
-			// https://github.com/miloyip/rapidjson/
-			return "";
-		}
-	}
+    /// Fast conversion to string (float specialisation)
+    /**
+    *   fast conversion from float to string
+    *	\param obj Object contains the data to convert
+    */
+    template<>
+    inline const std::string toString<float>(const float& p_obj)
+    {
+        // http://dl.acm.org/citation.cfm?doid=1809028.1806623
+        // https://github.com/miloyip/rapidjson/
+        return "";
+    }
 }
-
-
-
-
-
-

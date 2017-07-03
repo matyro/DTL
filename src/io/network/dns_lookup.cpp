@@ -29,8 +29,6 @@
 
 
 
-namespace lib
-{
 	namespace io
 	{
 		namespace network
@@ -107,5 +105,4 @@ namespace lib
 #error System unsupported!
 #endif
 	}
-}
 }

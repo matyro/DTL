@@ -23,8 +23,6 @@
 #include <locale>
 #include <codecvt>
 
-namespace lib
-{
 	namespace io
 	{
 		namespace network
@@ -328,5 +326,4 @@ namespace lib
 
 		}
 	}
-}
 #endif
