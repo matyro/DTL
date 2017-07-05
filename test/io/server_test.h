@@ -1,12 +1,12 @@
 /* server_test.cpp
- * this file is part of Dynstack/RemoteControl for CORSIKA
- *
- * Copyright (C) <2016> <Dominik Baack>
- *		All rights reserved.
- *
- * 	This software may be modified and distributed under the terms
- * 	of the LGPL license. See the LICENSE file for details.
- */
+* this file is part of Dynstack/RemoteControl for CORSIKA
+*
+* Copyright (C) <2016> <Dominik Baack>
+*		All rights reserved.
+*
+* 	This software may be modified and distributed under the terms
+* 	of the LGPL license. See the LICENSE file for details.
+*/
 
 #include "io/network/server.h"
 #include "io/network/socket.h"
@@ -14,71 +14,120 @@
 #include "algorithm/char_to_byte.h"
 
 #include <thread>
+#include <future>
+
 #include <chrono>
 #include <iostream>
 
-#include <cstring>
-#include <cstdlib>
+
 
 namespace test
 {
-		namespace network
-		{
+    namespace network
+    {
 
-			bool test_server()
-			{
+        class NetworkServer : public ::testing::Test
+        {
+        public:
 
-				const int port = 5000 + (rand() % 5000);
-				::io::network::Server server(port);
-				server.setNewConFunc([](unsigned int id, ::io::network::Socket* sock)->bool
-				{
-					(void)(id);
-					(void)(sock);
-					return true;
-				});
+            static ::io::network::Server* server;
+            static std::future<bool> trReturn;
 
-				server.setRecvFunc([](unsigned int id, std::vector<uint8_t> data)->void
-				{
-					(void)(id);
-					if (std::memcmp(data.data(), "T3st\0", 5) != 0)
-					{
-						std::cerr << "Client socket sends wrong data!\a" << std::endl;
-					}
-				});
+            NetworkServer()
+            {
+                // initialization code here
+            }
+
+            static void SetUpTestCase()
+            {
+            	trReturn = std::async(std::launch::async, []() -> bool {
+                   ::io::network::Socket client;
+
+                   client.create();
+
+                   std::this_thread::sleep_for(std::chrono::milliseconds(100));
+
+                   if( !client.connect("127.0.0.1", 9558) )
+                   {
+                	   return false;
+                   }
+
+                   auto a = ::io::network::Socket::waitFor_read({ &client }, 1000000);
+
+                   if(a.size() == 0)
+                   {
+                	   return false;
+                   }
+
+                   auto data = client.recv();
+                   client.send( data.data(), data.size());
+
+                   client.close();
+                   return true;
+                });
+            }
+
+            static void TearDownTestCase()
+            {
+                delete server;
+            }
+
+            void SetUp( )
+            {
+            }
+
+            void TearDown( )
+            {
+            }
+
+            ~NetworkServer()
+            {
+                // cleanup any pending stuff, but no exceptions allowed
+            }
+        };
+
+        ::io::network::Server* NetworkServer::server = nullptr;
+        std::future<bool> NetworkServer::trReturn;
+
+        TEST_F(NetworkServer, Create)
+        {
+            server = new ::io::network::Server(9558);
+        }
 
 
-				std::this_thread::sleep_for(std::chrono::seconds(1));
+        TEST_F(NetworkServer, BindConnectionFunction)
+        {
+            server->setNewConFunc([](unsigned int id, ::io::network::Socket* sock)->bool
+            {
+                (void)(id);
+                (void)(sock);
 
+                return true;
+            });
+        }
 
+        TEST_F(NetworkServer, BindRecvFuntion)
+        {
+            server->setRecvFunc([s=server](unsigned int id, std::vector<uint8_t> data)->void
+            {
+                (void)(id);
+                (void)(data);
+                s->send(id, data.data(), data.size());
 
-				std::thread tr([port]() -> bool
-				{
-					::io::network::Socket client;
-					client.create();
-					client.connect("127.0.0.1", port);
+            });
+        }
 
-					client.send( ::algorithm::char_to_byte("T3st\0").data(), 5);
+        TEST_F(NetworkServer, Broadcast)
+        {
+        	std::this_thread::sleep_for(std::chrono::milliseconds(500));
+            server->broadcast( ::algorithm::char_to_byte("Test\0").data(), 5);
+        }
 
-					auto data = client.recv();
-					if (std::memcmp(data.data(), "Test\0", 5) != 0)
-					{
-						std::cerr << "Server socket sends wrong data!\a" << std::endl;
-					}
-
-					client.close();
-
-
-					return true;
-				});
-
-				server.broadcast(::algorithm::char_to_byte("Test\0").data(), 5);
-
-				tr.join();
-
-				return true;
-			}
-
-
-
-	}
+        TEST_F(NetworkServer, Close)
+        {
+        	EXPECT_TRUE(trReturn.get());
+            EXPECT_TRUE(false) << "Destuct server implementieren";
+            //server->close();
+        }
+    }
 }

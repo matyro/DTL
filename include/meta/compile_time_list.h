@@ -113,6 +113,18 @@ namespace meta
             }
 
 
+            // TODO implement comparison operator
+            constexpr bool operator==(const List<T, TNum>& rhs) const
+            {
+                return false;
+            }
+
+            template<class T2, size_t TNum2>
+            constexpr bool operator==(const List<T2, TNum2>& rhs) const
+            {
+                return false;
+            }
+
             constexpr T get(const size_t i) const
             {
                 return (i == 0) ? data : List<T, TNum - 1>::get(i - 1);
@@ -140,7 +152,8 @@ namespace meta
             constexpr operator const List<TReturn, TNum>() const
             {
                 static_assert(std::is_convertible<TReturn, T>::value, "Cant cast into this type!");
-                return map(meta::identity);
+
+                return map<meta::Identity, TReturn>(meta::Identity());
             }
 
         };

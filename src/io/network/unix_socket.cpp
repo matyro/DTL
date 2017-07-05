@@ -140,7 +140,7 @@
 				}
 			}
 
-			std::vector<u_int8_t> Socket::recv(bool p_noBlock)
+            std::vector<u_int8_t> Socket::recv(bool p_noBlock)
 			{
 				std::vector<u_int8_t> buf(1024);
 
@@ -194,10 +194,18 @@
 
 				if (status < 0)
 				{
-					std::cerr << __LINE__ << " Could not connect to ip" << std::endl;
+					std::cerr << " Could not connect to ip with status " << status << " and errno " << errno << std::endl;
 					return false;
 				}
-				return true;
+				else if (status == 0)
+				{
+					return true;
+				}
+				else
+				{
+					throw("Socket connect function does not work normal!");
+					return false;
+				}
 			}
 
 			bool Socket::is_valid() const
@@ -335,4 +343,3 @@
 	}
 
 #endif
-

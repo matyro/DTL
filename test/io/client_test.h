@@ -16,61 +16,110 @@
 #include "algorithm/char_to_byte.h"
 
 #include <thread>
+#include <future>
 #include <chrono>
-#include <iostream>
-
-#include <cstring>
-
 
 
 
 namespace test
 {
-	namespace lib
-	{
-		namespace network
-		{
 
-			bool test_client()
-			{
+    namespace network
+    {
+        class NetworkClient : public ::testing::Test
+        {
+        public:
+
+            static ::io::network::Client* client;
+            static std::future<bool> trReturn;
+
+            NetworkClient()
+            {
+                // initialization code here
+            }
+
+            static void SetUpTestCase()
+            {
+                client = new ::io::network::Client();
+
+                trReturn = std::async(std::launch::async, []() -> bool {
+                    ::io::network::Socket server;
+                    server.create();
+
+                    server.bind(9557);
+
+                    server.listen();
+
+                    ::io::network::Socket acc;
+                    server.accept(acc);
+
+                    auto a = ::io::network::Socket::waitFor_read({ &acc }, 1000000 );
+
+                    if(a.size() == 0)
+                    {
+                    	return false;
+                    }
+
+                    auto msg = a[0]->recv(true);
+                    acc.send(msg.data(), msg.size());
+
+                    acc.close();
+                    server.close();
+
+                    return true;
+                });
+            }
+
+            static void TearDownTestCase()
+            {
+            	delete client;
+            }
+
+            void SetUp( )
+            {
+            }
+
+            void TearDown( )
+            {
+            }
+
+            ~NetworkClient()
+            {
+                // cleanup any pending stuff, but no exceptions allowed
+            }
+        };
+
+        ::io::network::Client* NetworkClient::client = nullptr;
+        std::future<bool> NetworkClient::trReturn;
 
 
-				std::thread tr([]() -> bool {
-				    ::io::network::Socket server;
-					server.create();
-					server.bind(9557);
-					server.listen();
+        TEST_F(NetworkClient, Connect)
+        {
+        	std::this_thread::sleep_for(std::chrono::milliseconds(100));
 
-					::io::network::Socket con;
-					server.accept(con);
+            ASSERT_TRUE( client->init("127.0.0.1", 9557) );
+        }
 
-					auto data = con.recv();
-					if (std::memcmp(data.data(), "Test\0", 5) != 0)
-					{
-						std::cerr << "Client socket sends wrong data!\a" << std::endl;
-						return false;
-					}
-					con.close();
-					server.close();
+        TEST_F(NetworkClient, SendRecv)
+        {
+            client->send( ::algorithm::char_to_byte("Test\0").data(), 5);
+            auto data = client->recv();
 
-					return true;
-				});
+            ASSERT_EQ(data.size(), 5);
+            ASSERT_EQ(data[0], 'T');
+            ASSERT_EQ(data[1], 'e');
+            ASSERT_EQ(data[2], 's');
+            ASSERT_EQ(data[3], 't');
+            ASSERT_EQ(data[4], '\0');
+        }
 
-				std::this_thread::sleep_for(std::chrono::milliseconds(100));
-				::io::network::Client client;
-				client.init("127.0.0.1", 9557);
+        TEST_F(NetworkClient, Close)
+        {
+        	ASSERT_TRUE(trReturn.get()) << "Control Server recieved wrong message";
 
-				client.send( ::algorithm::char_to_byte("Test\0").data(), 5);
+            client->close();
+        }
 
-				client.close();
 
-				std::cout << "Wait for join..." << std::endl;
-				tr.join();
-
-				return true;
-			}
-
-		}
-
-	}
+    }
 }

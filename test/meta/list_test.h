@@ -36,6 +36,48 @@ namespace test
 
             constexpr auto tup5 = make_list(1,2,3,4);
             constexpr const List<const int, 4> tup6(1, 2, 3, 4);
+
+
+            (void)(tup1);
+            (void)(tup2);
+            (void)(tup5);
+        }
+
+        TEST(CompileTimeList, CopyConstruct)
+        {
+            constexpr auto tup1 = make_list(1,2,3,4);
+
+            constexpr auto tup2 = List<int, 4>(tup1);
+            constexpr auto tup3 = tup1;
+        }
+
+        TEST(CompileTimeList, OperatorEqual)
+        {
+            constexpr auto tup1 = make_list(1,2,3,4);
+            constexpr auto tup2 = make_list(1,2,3,4);
+            constexpr auto tup3 = make_list(1.0,2.0,3.0,4.0);
+
+            constexpr auto tup4 = make_list(1,2,3,5);
+            constexpr auto tup5 = make_list(1,2,3,4,5);
+
+            ASSERT_TRUE( tup1 == tup1);
+            ASSERT_TRUE( tup1 == tup2);
+            ASSERT_TRUE( tup1 == tup3);
+
+            ASSERT_FALSE( tup1 == tup4);
+            ASSERT_FALSE( tup1 == tup5);
+        }
+
+        TEST(CompileTimeList, CastTest)
+        {
+            constexpr auto tup = List<int, 4>(1,2,3,4);
+
+            constexpr List<float, 4> tupFloat = tup;
+
+            ASSERT_EQ( tupFloat.get<0>(), 1.0f);
+            ASSERT_EQ( tupFloat.get<1>(), 2.0f);
+            ASSERT_EQ( tupFloat.get<2>(), 3.0f);
+            ASSERT_EQ( tupFloat.get<3>(), 4.0f);
         }
 
         TEST(CompileTimeList, Get)
@@ -98,6 +140,11 @@ namespace test
             ASSERT_EQ( newTup.get<1>(), 7);
             ASSERT_EQ( newTup.get<2>(), 8);
             ASSERT_EQ( newTup.get<3>(), 9);
+        }
+
+        TEST(CompileTimeList, Zip)
+        {
+            ASSERT_TRUE(false);
         }
 
         TEST(CompileTimeList, Concat)

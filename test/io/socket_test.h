@@ -1,4 +1,4 @@
-/* SocketTest.cpp
+/* NetworkSocket.cpp
 * this file is part of Dynstack/RemoteControl for CORSIKA
 *
 * Copyright (C) <2016> <Dominik Baack>
@@ -23,7 +23,7 @@ namespace test
     namespace network
     {
 
-        class SocketTest : public ::testing::Test
+        class NetworkSocket : public ::testing::Test
         {
         public:
 
@@ -31,7 +31,7 @@ namespace test
             static ::io::network::Socket* server;
             static ::io::network::Socket* accept;
 
-            SocketTest()
+            NetworkSocket()
             {
                 // initialization code here
             }
@@ -61,19 +61,19 @@ namespace test
                 // ok to through exceptions from here if need be
             }
 
-            ~SocketTest()
+            ~NetworkSocket()
             {
                 // cleanup any pending stuff, but no exceptions allowed
             }
         };
 
-        ::io::network::Socket* SocketTest::client = nullptr;
-        ::io::network::Socket* SocketTest::server = nullptr;
-        ::io::network::Socket* SocketTest::accept = nullptr;
+        ::io::network::Socket* NetworkSocket::client = nullptr;
+        ::io::network::Socket* NetworkSocket::server = nullptr;
+        ::io::network::Socket* NetworkSocket::accept = nullptr;
 
 
 
-        TEST_F(SocketTest, Server)
+        TEST_F(NetworkSocket, Server)
         {
             ASSERT_TRUE( server->create() );
             ASSERT_TRUE( server->bind(13337) );
@@ -81,12 +81,12 @@ namespace test
         }
 
 
-        TEST_F(SocketTest, Client)
+        TEST_F(NetworkSocket, Client)
         {
             ASSERT_TRUE( client->create() );
         }
 
-        TEST_F(SocketTest, Connect)
+        TEST_F(NetworkSocket, Connect)
         {
             ASSERT_TRUE( client->connect("127.0.0.1", 13337) );
 
@@ -96,10 +96,10 @@ namespace test
         }
 
 
-        TEST_F(SocketTest, Message)
+        TEST_F(NetworkSocket, SendRecv)
         {
             auto fServer = [](){
-                auto a = ::io::network::Socket::waitFor_read({ &(*SocketTest::accept) }, 0);
+                auto a = ::io::network::Socket::waitFor_read({ &(*NetworkSocket::accept) }, 0);
 
                 //ASSERT_EQUAL(a.size(), 1) << "no message recieved";
 
@@ -129,107 +129,11 @@ namespace test
 
 
 
-        TEST_F(SocketTest, Close)
+        TEST_F(NetworkSocket, Close)
         {
             server->close();
             client->close();
+            accept->close();
         }
-
-
-
-        /*
-
-        bool test_send()
-        {
-            auto fServer = [](){
-                std::cout << "Start server" << std::endl;
-
-                ::io::network::Socket server;
-
-                std::cout << "Server create"<< std::endl;
-                server.create();
-
-                std::cout << "Server bind" << std::endl;
-                server.bind(13338);
-
-                std::cout << "Server listen" << std::endl;
-                server.listen();
-
-                ::io::network::Socket acc;
-                server.accept(acc);
-
-                std::cout << "Wait for client message:" << std::endl;
-                auto a = acc.waitFor_read({ &acc }, 0);
-                std::cout << "Get client message!" << std::endl;
-
-                if (a.size() != 1)
-                {
-                    std::cerr << "Wait does not work correctly!" << std::endl;
-                }
-
-                auto msg = a[0]->recv(true);
-
-                if (msg.size() != 5)
-                {
-                    std::cerr << "Error - Message size is not correct (Server)!" << std::endl;
-                    std::cerr << "Its: " << msg.size() << "  Should: 5" << std::endl;
-                }
-
-                if (memcmp(msg.data(), "Test\0", 5) != 0)
-                {
-                    std::cerr << "Error - Message is not correct (Server)!" << std::endl;
-                    std::cerr << "Should: " << "Test\0" << "  Is: ";
-                    for (auto itr : msg)
-                    {
-                        std::cerr << itr;
-                    }
-                    std::cerr << std::endl;
-                }
-
-                acc.send(::algorithm::char_to_byte("Test2\0").data(), 6);
-
-            };
-
-            std::thread thread(fServer);
-
-            std::this_thread::sleep_for(std::chrono::milliseconds(500));
-
-            std::cout << "Start client" << std::endl;
-            ::io::network::Socket client;
-            client.create();
-            client.connect("127.0.0.1", 13338);
-            std::this_thread::sleep_for(std::chrono::milliseconds(1000));
-
-            std::cout << "Send" << std::endl;
-            client.send(::algorithm::char_to_byte("Test\0").data(), 5);
-
-
-            std::cout << "Recv" << std::endl;
-            auto msg = client.recv(false);
-
-            std::cout << "Check" << std::endl;
-            if (msg.size() != 6)
-            {
-                std::cerr << "Error - Message size is not correct (Client)!" << std::endl;
-                return false;
-            }
-
-            if (std::memcmp(msg.data(), "Test2\0", 6) != 0)
-            {
-                std::cerr << "Error - Message is not correct (Client)!" << std::endl;
-                std::cerr << "Should: " << "Test\0" << "  Is: ";
-                for (auto itr : msg)
-                std::cerr << itr;
-                std::cerr << std::endl;
-
-                return false;
-            }
-
-            std::cout << "Join" << std::endl;
-            thread.join();
-
-            return true;
-        }
-*/
     }
 }

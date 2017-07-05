@@ -11,6 +11,7 @@
 #include "io/network/client.h"
 
 #include <exception>
+#include <chrono>
 
 #include "io/io_exception.h"
 

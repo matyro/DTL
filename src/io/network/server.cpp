@@ -55,10 +55,9 @@
 			{
 				while (m_isRunning.load() == true)
 				{
+					std::vector<io::network::Socket*> waitList;
 
 					this->m_vectorMutex.lock();
-
-					std::vector<io::network::Socket*> waitList;
 
 					for (auto itr = m_std_connectionSock.begin(); itr != m_std_connectionSock.end(); itr++)
 					{
@@ -68,7 +67,7 @@
 
 					if (waitList.size() > 0)
 					{
-						auto recvReady = io::network::Socket::waitFor_read(waitList, 50);
+						auto recvReady = io::network::Socket::waitFor_read(waitList, 500);
 
 						for (auto itr : recvReady)
 						{
@@ -79,9 +78,9 @@
 						}
 					}
 #if __cplusplus > 199711L
-					std::this_thread::sleep_for(std::chrono::milliseconds(20));
+					std::this_thread::sleep_for(std::chrono::milliseconds(2));
 #else
-					usleep(20000);
+					usleep(2000);
 #endif
 					this->m_actionMutex.lock();
 
@@ -94,9 +93,9 @@
 					this->m_actionMutex.unlock();
 
 #if __cplusplus > 199711L
-					std::this_thread::sleep_for(std::chrono::milliseconds(20));
+					std::this_thread::sleep_for(std::chrono::milliseconds(2));
 #else
-					usleep(20000);
+					usleep(2000);
 #endif
 				}
 			}

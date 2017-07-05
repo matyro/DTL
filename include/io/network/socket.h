@@ -94,8 +94,16 @@
 				/// Client initialization and connect
 				bool connect(const std::string p_host, const unsigned short p_port);
 
+
 				/// Send driver
 				bool send(const uint8_t* const p_data, const unsigned int p_length);
+                
+
+                //Socket operator<<(const char* p_data);  TODO
+
+                //template<class TData> TODO Normal and Iterator
+                //Socket operator<<();
+
 
 				/// Recieve message
 				std::vector<uint8_t> recv(bool p_noBlock = false);					//Parameter (true) = unblocking
@@ -115,4 +123,3 @@
 
 		}
 	}
-
