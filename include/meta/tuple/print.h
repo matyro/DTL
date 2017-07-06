@@ -10,6 +10,7 @@
 
 #pragma once
 #include<tuple>
+#include<sstream>
 
 #include "map.h"
 #include "fold.h"
@@ -52,7 +53,7 @@ namespace meta
         }
 
         template<class ... TArgs>
-        auto print(std::tuple<TArgs...> tup)
+        auto print(std::tuple<TArgs...> tup) -> std::string
         {
             std::stringstream sstr;
             sstr << tup;
