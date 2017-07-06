@@ -14,6 +14,7 @@ set (DTL_VERSION_PATCH 0)
 
 set (PROJECT_INCLUDE_DIR ${PROJECT_SOURCE_DIR}/include)
 set (PROJECT_SOURCE_DIR ${CMAKE_CURRENT_SOURCE_DIR}/src)
+set (PROJECT_DIR ${PROJECT_SOURCE_DIR})
 
 # configure a header file to pass some of the CMake settings
 # to the source code
@@ -80,7 +81,7 @@ find_package(GTest REQUIRED)
 include_directories(${GTEST_INCLUDE_DIRS})
 
 # Add UnitTest
-add_executable(unit_test "${PROJECT_SOURCE_DIR}/test/unit_test.cpp")
+add_executable(unit_test "${PROJECT_DIR}/test/unit_test.cpp")
 
 target_link_libraries(unit_test ${GTEST_BOTH_LIBRARIES})
 
