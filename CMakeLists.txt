@@ -1,20 +1,21 @@
 
 # Specify the minimum version for CMake
 
-cmake_minimum_required(VERSION 3.0)
+cmake_minimum_required(VERSION 2.6)
 
 # Project's name
 
-project(DTL CXX)
-ENABLE_LANGUAGE(C)
+project(DTL C CXX)
 
 set (DTL_VERSION_MAJOR 1)
 set (DTL_VERSION_MINOR 0)
 set (DTL_VERSION_PATCH 0)
 
+option(BUILD_TESTS "Build test programs" OFF)
+
 set (PROJECT_INCLUDE_DIR ${PROJECT_SOURCE_DIR}/include)
 set (PROJECT_SOURCE_DIR ${CMAKE_CURRENT_SOURCE_DIR}/src)
-set (PROJECT_DIR ${PROJECT_SOURCE_DIR})
+set (PROJECT_DIR ${CMAKE_CURRENT_SOURCE_DIR})
 
 # configure a header file to pass some of the CMake settings
 # to the source code
@@ -73,19 +74,22 @@ file(GLOB network_SRC
     "${PROJECT_SOURCE_DIR}/src/io/network/*.cpp"
 )
 add_library(network_lib STATIC "${network_SRC}")
+set_target_properties(network_lib PROPERTIES LINKER_LANGUAGE CXX)
 
+# Check and build tests
+if(BUILD_TESTS)
+    # Find gtest and add it to directory
+    enable_testing()
+    find_package(GTest REQUIRED)
+    include_directories(${GTEST_INCLUDE_DIRS})
 
-# Find gtest and add it to directory
-enable_testing()
-find_package(GTest REQUIRED)
-include_directories(${GTEST_INCLUDE_DIRS})
+    # Add UnitTest
+    add_executable(unit_test "${PROJECT_DIR}/test/unit_test.cpp")
 
-# Add UnitTest
-add_executable(unit_test "${PROJECT_DIR}/test/unit_test.cpp")
+    target_link_libraries(unit_test ${GTEST_BOTH_LIBRARIES})
 
-target_link_libraries(unit_test ${GTEST_BOTH_LIBRARIES})
+    find_package (Threads)
+    target_link_libraries(unit_test "${CMAKE_THREAD_LIBS_INIT}")
 
-find_package (Threads)
-target_link_libraries(unit_test "${CMAKE_THREAD_LIBS_INIT}")
-
-target_link_libraries(unit_test network_lib)
+    target_link_libraries(unit_test network_lib)
+endif(BUILD_TESTS)
