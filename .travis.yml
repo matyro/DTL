@@ -96,9 +96,9 @@ script:
   - mkdir build
   - cd build
   - cmake .. -DBUILD_TESTS=ON
-  - echo "Compiler: ${COMPILER}"
-  - alias c++=${COMPILER}
-  - make CXX=$COMPILER
+  - echo "Compiler:" $COMPILER
+  - alias c++=$COMPILER
+  - make VERBOSE=1 CXX=$COMPILER
   - ./unit_test
 
 after_success:
