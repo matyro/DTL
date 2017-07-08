@@ -45,7 +45,7 @@ set(CMAKE_BUILD_TYPE Release)
 # Compiler-specific C++XY activation.
 if ("${CMAKE_CXX_COMPILER_ID}" MATCHES "GNU")
     execute_process(
-    COMMAND bash "-c" "echo -n $(expr $(gcc -dumpversion | cut -f1 -d.) \\* 10000 + $(gcc -dumpversion | cut -f2 -d.) \\* 100 + 0$(gcc -dumpversion | cut -f3 -d.))" OUTPUT_VARIABLE GCC_VERSION)
+    COMMAND bash "-c" "echo -n $(expr $(${CMAKE_CXX_COMPILER} -dumpversion | cut -f1 -d.) \\* 10000 + $(${CMAKE_CXX_COMPILER} -dumpversion | cut -f2 -d.) \\* 100 + 0$(${CMAKE_CXX_COMPILER} -dumpversion | cut -f3 -d.))" OUTPUT_VARIABLE GCC_VERSION)
     message("GCC Version to number: ${GCC_VERSION}" )
     IF ( GCC_VERSION LESS 40600 OR GCC_VERSION EQUAL 40600)
         message(FATAL_ERROR "${PROJECT_NAME} requires g++ 4.6 or greater.")
