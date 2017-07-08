@@ -95,10 +95,10 @@ script:
   - g++ --version
   - mkdir build
   - cd build
-  - cmake .. -DBUILD_TESTS=ON
+  - cmake .. -DBUILD_TESTS=ON -DCMAKE_CXX_COMPILER=$COMPILER
   - echo "Compiler:" $COMPILER
   - alias c++=$COMPILER
-  - make VERBOSE=1 CXX=$COMPILER
+  - make VERBOSE=1
   - ./unit_test
 
 after_success:
