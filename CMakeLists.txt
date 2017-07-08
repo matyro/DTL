@@ -13,9 +13,13 @@ set (DTL_VERSION_PATCH 0)
 
 option(BUILD_TESTS "Build test programs" OFF)
 
+# Set the output folder where your program will be created
+set(EXECUTABLE_OUTPUT_PATH ${CMAKE_BINARY_DIR})
+set(LIBRARY_OUTPUT_PATH ${CMAKE_BINARY_DIR})
+
+set (PROJECT_DIR ${PROJECT_SOURCE_DIR})
 set (PROJECT_INCLUDE_DIR ${PROJECT_SOURCE_DIR}/include)
-set (PROJECT_SOURCE_DIR ${CMAKE_CURRENT_SOURCE_DIR}/src)
-set (PROJECT_DIR ${CMAKE_CURRENT_SOURCE_DIR})
+set (PROJECT_SOURCE_DIR ${PROJECT_SOURCE_DIR}/src)
 
 # configure a header file to pass some of the CMake settings
 # to the source code
@@ -25,22 +29,12 @@ configure_file (
 )
 
 
-
-
-file(MAKE_DIRECTORY "${PROJECT_BINARY_DIR}/bin")
-file(MAKE_DIRECTORY "${PROJECT_BINARY_DIR}/obj")
-file(MAKE_DIRECTORY "${PROJECT_BINARY_DIR}/lib")
-
-# Set the output folder where your program will be created
-set(EXECUTABLE_OUTPUT_PATH "${PROJECT_BINARY_DIR}/bin")
-set(LIBRARY_OUTPUT_PATH "${PROJECT_BINARY_DIR}/lib")
-
-set(SOURCES ${CMAKE_SOURCE_DIR}/src/)
-
 # The following folder will be included
-include_directories("${PROJECT_SOURCE_DIR}/include")
-include_directories("${PROJECT_SOURCE_DIR}/test")
+include_directories(${PROJECT_DIR}/include)
+include_directories(${PROJECT_DIR}/test)
 
+# The following directory will contain library
+link_directories(${PROJECT_BINARY_DIR})
 
 # Set Compiler Version
 set (CMAKE_CXX_STANDARD 14)
@@ -70,10 +64,10 @@ CHECK_FUNCTION_EXISTS(strerror HAVE_STRERROR)
 
 # Add library network
 file(GLOB network_SRC
-    "${PROJECT_SOURCE_DIR}/include/io/network/*.h"
-    "${PROJECT_SOURCE_DIR}/src/io/network/*.cpp"
+    "${PROJECT_DIR}/include/io/network/*.h"
+    "${PROJECT_DIR}/src/io/network/*.cpp"
 )
-add_library(network_lib STATIC "${network_SRC}")
+add_library(network_lib STATIC ${network_SRC})
 set_target_properties(network_lib PROPERTIES LINKER_LANGUAGE CXX)
 
 # Check and build tests
@@ -84,12 +78,14 @@ if(BUILD_TESTS)
     include_directories(${GTEST_INCLUDE_DIRS})
 
     # Add UnitTest
-    add_executable(unit_test "${PROJECT_DIR}/test/unit_test.cpp")
+    add_executable(unit_test ${PROJECT_DIR}/test/unit_test.cpp)
+
+    target_link_libraries(unit_test network_lib)
 
     target_link_libraries(unit_test ${GTEST_BOTH_LIBRARIES})
 
     find_package (Threads)
-    target_link_libraries(unit_test "${CMAKE_THREAD_LIBS_INIT}")
+    target_link_libraries(unit_test ${CMAKE_THREAD_LIBS_INIT})
 
-    target_link_libraries(unit_test network_lib)
+
 endif(BUILD_TESTS)

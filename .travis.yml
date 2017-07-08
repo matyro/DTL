@@ -80,17 +80,19 @@ matrix:
 
 before-install:
   - sudo apt-get update -qq
+  - pip install --user cpp-coveralls
 
-script:  
-  - ls 
+script:
+  - ls
   - g++ --version
   - mkdir build
   - cd build
-  - ../configure --prefix=$(pwd) --with-test --enable-nococo
-  - make CXX=$COMPILER library_test
-  - ./library_test
+  - cmake .. -DBUILD_TESTS=ON
+  - make CXX=$COMPILER
+  - ./unit_test
+
+after_success:
+  - coveralls --root .. -E ".*external.*" -E ".*CMakeFiles.*" -E ".*test/.*.cpp.*"
 
 notifications:
 email: false
-
-
