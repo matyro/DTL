@@ -109,12 +109,12 @@ matrix:
 before-install:
   - sudo apt-get update -qq
   - pip install --user cpp-coveralls
-  - export CXX=$COMP_XX
-  - export CC=$COMP_X
 
 install:
   - sudo apt-get install libgtest-dev
   - cd /usr/src/gtest
+  - export CXX=$COMP_XX
+  - export CC=$COMP_X
   - sudo cmake .
   - sudo make
   - sudo mv libgtest* /usr/lib/
