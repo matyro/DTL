@@ -95,6 +95,7 @@ script:
   - g++ --version
   - mkdir build
   - cd build
+  - export CXX=$COMPILER
   - cmake .. -DBUILD_TESTS=ON -DCMAKE_CXX_COMPILER=$COMPILER
   - echo "Compiler:" $COMPILER
   - alias c++=$COMPILER

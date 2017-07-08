@@ -36,11 +36,34 @@ include_directories(${PROJECT_DIR}/test)
 # The following directory will contain library
 link_directories(${PROJECT_BINARY_DIR})
 
-# Set Compiler Version
-set (CMAKE_CXX_STANDARD 14)
 # Set shared compiler flags
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -g -Wall -Wextra -pedantic -pedantic-errors")
 
+#Set settings to release
+set(CMAKE_BUILD_TYPE Release)
+
+# Compiler-specific C++XY activation.
+if ("${CMAKE_CXX_COMPILER_ID}" MATCHES "GNU")
+    execute_process(
+    COMMAND bash "-c" "echo -n $(expr $(gcc -dumpversion | cut -f1 -d.) \\* 10000 + $(gcc -dumpversion | cut -f2 -d.) \\* 100 + 0$(gcc -dumpversion | cut -f3 -d.))" OUTPUT_VARIABLE GCC_VERSION)
+    message("GCC Version to number: ${GCC_VERSION}" )
+    IF ( GCC_VERSION LESS 40600 OR GCC_VERSION EQUAL 40600)
+        message(FATAL_ERROR "${PROJECT_NAME} requires g++ 4.6 or greater.")
+    elseif( GCC_VERSION LESS 40800 OR GCC_VERSION EQUAL 40800)
+        message("${PROJECT_NAME} uses a version below g++ 4.8.1 and does not support the full feature level. Read the manual to check which functionality is available!")
+        set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++0x")
+    elseif( GCC_VERSION LESS 50000 OR GCC_VERSION EQUAL 50000)
+        message("${PROJECT_NAME} uses a version above g++ 4.8.1 and does support the full feature level.")
+        set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++11")
+    elseif( GCC_VERSION LESS 70000 OR GCC_VERSION EQUAL 70000)
+        message("${PROJECT_NAME} uses a g++ version above 5.0.0 and support all features including additional performance and usability tweaks!")
+        set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++14")
+    endif ()
+elseif ("${CMAKE_CXX_COMPILER_ID}" MATCHES "Clang")
+    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -stdlib=libc++")
+else ()
+    message(FATAL_ERROR "Your C++ compiler does not support the necessary feature to compile this module. For best results use gcc 4.6 or above.")
+endif ()
 
 # Check for header
 INCLUDE (CheckIncludeFiles)
