@@ -70,9 +70,9 @@ namespace test
 
         TEST(CompileTimeList, CastTest)
         {
-            constexpr auto tup = List<int, 4>(1,2,3,4);
+            List<int, 4> tup(1,2,3,4);
 
-            constexpr List<float, 4> tupFloat = tup;
+            List<float, 4> tupFloat = tup;
 
             ASSERT_EQ( tupFloat.get<0>(), 1.0f);
             ASSERT_EQ( tupFloat.get<1>(), 2.0f);
