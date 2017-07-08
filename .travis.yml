@@ -82,6 +82,10 @@ before-install:
   - sudo apt-get update -qq
   - pip install --user cpp-coveralls
 
+install:
+  - sudo apt-get install libgtest-dev
+  - sudo apt-get install libgtest
+
 script:
   - ls
   - g++ --version
