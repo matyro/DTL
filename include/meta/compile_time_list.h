@@ -77,28 +77,40 @@ namespace meta
             }
 
             template<class TFunc, class TReturn>
-            constexpr TReturn foldr(TFunc func, TReturn init) const
+            constexpr TReturn foldl(TFunc func, TReturn init) const
             {
-                return List<T, TNum - 1>::foldr(func, func(data, init));
+                return List<T, TNum - 1>::foldl(func, func(init, data));
             }
 
             template<class TFunc, class TReturn>
-            constexpr TReturn foldl(TFunc func, TReturn init) const
+            constexpr TReturn foldr(TFunc func, TReturn init) const
             {
-                return func(data, List<T, TNum - 1>::foldl(func, init));
+                return func(data, List<T, TNum - 1>::foldr(func, init));
             }
 
             /// Map function over all elements of a tuple
             /**
             *  When Lambdas are used as function the return value is not constexpr anymore (earlier then C++17)
             */
-            template<class TFunc, class TReturn>
-            constexpr List<TReturn, TNum> map(TFunc func) const
+            template<class TFunc>
+            constexpr List<typename std::result_of<TFunc(T)>::type, TNum> map(TFunc func) const
             {
                 // Call func on local data and add it to a list
                 // append the rest
                 //
-                return List<TReturn, 1>(func(data)).concat( dynamic_cast<const List<T, TNum - 1>*>(this)->template map<TFunc, TReturn>(func) );
+                return List<typename std::result_of<TFunc(T)>::type, 1>(func(data)).concat( dynamic_cast<const List<T, TNum - 1>*>(this)->template map<TFunc>(func) );
+            }
+
+            /// Merge two lists elementwise into a new one
+            /**
+            *  When Lambdas are used as function the return value is not constexpr anymore (earlier then C++17)
+            */
+            template<class TFunc, class T2>
+            constexpr List< typename std::result_of<TFunc(T, T2)>::type , TNum> zip(TFunc func, List<T2, TNum> rhs) const
+            {
+                // Call func on local data and add it to a list
+                // append the rest
+                return List< typename std::result_of<TFunc(T, T2)>::type, 1>(func(data, rhs.get())).concat( static_cast< const List<T, TNum - 1> >(*this).template zip<TFunc, typename std::result_of<TFunc(T, T2)>::type>(func, static_cast<const List<T, TNum - 1>>(rhs)) );
             }
 
             template<size_t TNum2>
@@ -112,13 +124,28 @@ namespace meta
                 return List<T, TNum>(rhs);
             }
 
-
-            // TODO implement comparison operator
+            /// Compare content of equal type and size
             constexpr bool operator==(const List<T, TNum>& rhs) const
             {
+                std::cout << "Compare: " << data << " | " << rhs.data << std::endl;
+                if(data == rhs.data)
+                {
+                    return (static_cast<List<T, TNum - 1>>(*this) == static_cast<List<T, TNum - 1>>(rhs));
+                }
+                return false;
+            }
+            /// Compare content of equal length
+            template<class T2>
+            constexpr bool operator==(const List<T2, TNum>& rhs) const
+            {
+                if(data == rhs.get())
+                {
+                    return (static_cast<List<T, TNum - 1>>(*this) == static_cast<List<T2, TNum - 1>>(rhs));
+                }
                 return false;
             }
 
+            /// All types with not equal size or type compare to false
             template<class T2, size_t TNum2>
             constexpr bool operator==(const List<T2, TNum2>& rhs) const
             {
@@ -153,7 +180,7 @@ namespace meta
             {
                 static_assert(std::is_convertible<TReturn, T>::value, "Cant cast into this type!");
 
-                return map<meta::Identity, TReturn>(meta::Identity());
+                return List<TReturn, 1>( static_cast<TReturn>(data) ).concat( static_cast<List<TReturn, TNum - 1>>(  static_cast<List<T, TNum - 1>>(*this) ) );
             }
 
         };
@@ -215,13 +242,21 @@ namespace meta
             template<class TFunc, class TReturn>
             constexpr TReturn foldl(TFunc func, TReturn init) const
             {
-                return func(data, init);
+                return func(List<T, 0>::foldl(func, init), data);
             }
 
-            template<class TFunc, class TReturn>
-            constexpr List<TReturn, 1> map(TFunc func) const
+            template<class TFunc>
+            constexpr List<typename std::result_of<TFunc(T)>::type, 1> map(TFunc func) const
             {
-                return List<TReturn, 1>(func(data));
+                return List<typename std::result_of<TFunc(T)>::type, 1>(func(data));
+            }
+
+            template<class TFunc, class T2>
+            constexpr List<typename std::result_of<TFunc(T, T2)>::type, 1> zip(TFunc func, List<T2, 1> rhs) const
+            {
+                // Call func on local data and add it to a list
+                // append the rest
+                return List<typename std::result_of<TFunc(T, T2)>::type, 1>(func(data, rhs.get()));
             }
 
             template<size_t TNum2>
@@ -230,10 +265,38 @@ namespace meta
                 return this->concat(rhs);
             }
 
+            /// Compare content of equal type and size
+            constexpr bool operator==(const List<T, 1>& rhs) const
+            {
+                return data == rhs.data;
+            }
+            /// Compare content of equal length
+            template<class T2>
+            constexpr bool operator==(const List<T2, 1>& rhs) const
+            {
+                return data == rhs.get();
+            }
+
+            /// All types with not equal size or type compare to false
+            template<class T2, size_t TNum2>
+            constexpr bool operator==(const List<T2, TNum2>& rhs) const
+            {
+                return false;
+            }
+
             constexpr List<T, 1> operator=(const List<T, 1>& rhs) const
             {
                 return List<T, 1>(rhs);
             }
+
+            template<class TReturn>
+            constexpr operator const List<TReturn, 1>() const
+            {
+                static_assert(std::is_convertible<TReturn, T>::value, "Cant cast into this type!");
+
+                return List<TReturn, 1>( static_cast<TReturn>(data) );
+            }
+
 
             constexpr T get(size_t i) const
             {
@@ -284,10 +347,36 @@ namespace meta
                 //static_assert(false, "No subsection of empty List!");
             }
 
+            template<class TFunc, class T2>
+            constexpr List<typename std::result_of<TFunc(T, T2)>::type, 0> zip(TFunc func, List<T2, 0> rhs) const
+            {
+                // Call func on local data and add it to a list
+                // append the rest
+                return List<typename std::result_of<TFunc(T, T2)>::type, 0>();
+            }
+
             template<size_t TNum2>
             constexpr List<T, TNum2> operator+(const List<T, TNum2> rhs) const
             {
                 return rhs;
+            }
+
+            /// Compare content of equal length
+            template<class T2>
+            constexpr bool operator==(const List<T2, 0>& rhs) const
+            {
+                return true;
+            }
+
+            constexpr bool operator==(const List<T, 0>& rhs) const
+            {
+                return true;
+            }
+
+            template<class TFunc, class TReturn>
+            constexpr TReturn foldl(TFunc func, TReturn init) const
+            {
+                return init;
             }
 
             template<class TFunc, class TReturn>

@@ -114,7 +114,7 @@
 				*/
 				~Server();
 
-				/// Send data
+            	/// Send data
 				/**
 				*   \param[in] p_id ID of the connection to send the data
 				*   \param[in] p_data unsigned byte array of the data that must be send

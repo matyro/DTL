@@ -44,7 +44,7 @@
 			{
 				return std::forward<U>(v);
 			}
-		};   
+		};
 
 
 		/// Identity function

@@ -69,7 +69,7 @@ namespace test
 
             static void TearDownTestCase()
             {
-                delete server;
+
             }
 
             void SetUp( )
@@ -124,10 +124,8 @@ namespace test
         }
 
         TEST_F(NetworkServer, Close)
-        {
-        	EXPECT_TRUE(trReturn.get());
-            EXPECT_TRUE(false) << "Destuct server implementieren";
-            //server->close();
+        {        
+            delete server;
         }
     }
 }

@@ -74,7 +74,7 @@ namespace test
 
 
         const std::string l_fold(const std::string str, const char c)
-        {
+        {            
             std::stringstream sstr;
             sstr << str;
             sstr << c;
@@ -182,7 +182,7 @@ namespace test
             std::stringstream sstr;
             sstr << in;
             ASSERT_STREQ(sstr.str().c_str(), "(4,5,6,7,8)");
-            ASSERT_STREQ(print(in).c_str(), "(4,5,6,7,8)");   
+            ASSERT_STREQ(print(in).c_str(), "(4,5,6,7,8)");
         }
 
         TEST(Tuple, ForEach)

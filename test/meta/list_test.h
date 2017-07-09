@@ -99,42 +99,43 @@ namespace test
 
         TEST(CompileTimeList, Foldl)
         {
-            auto concatStr = [](const int a, const std::string b) -> std::string
+            auto concatStr = [](const std::string str, const int a) -> std::string
             {
+                std::cout << "Fold: " << a << std::endl;
                 std::stringstream sstr;
+                sstr << str;
                 sstr << a;
-                sstr << ",";
-                sstr << b;
                 return sstr.str();
             };
 
             constexpr auto tup = make_list(1,2,3,4);
-            ASSERT_STREQ( tup.foldl(concatStr, std::string("-")).c_str(), "-1,2,3,4");
+            std::cout << "########"<< tup.get() << std::endl;
+
+            ASSERT_STREQ( tup.foldl(concatStr, std::string("-")).c_str(), "-1234");
         }
 
         TEST(CompileTimeList, Foldr)
         {
-            auto concatStr = [](const int a, std::string b)
+            auto concatStr = [](const int a, std::string str)
             {
                 std::stringstream sstr;
+                sstr << str;
                 sstr << a;
-                sstr << ",";
-                sstr << b;
                 return sstr.str();
             };
 
             constexpr auto tup = make_list(1,2,3,4);
-            ASSERT_STREQ( tup.foldr(concatStr, std::string("-")).c_str(), "-1,2,3,4");
+            ASSERT_STREQ( tup.foldr(concatStr, std::string("-")).c_str(), "-4321");
         }
 
         TEST(CompileTimeList, Map)
         {
-            auto m = [](const int a) -> int
+            auto m = [](int a) -> int
             {
                 return (a) + 5;
             };
-            constexpr auto tup = make_list(1,2,3,4);
-            auto newTup = tup.map<decltype(m), int>(m);
+            constexpr List<int, 4> tup = make_list(1,2,3,4);
+            auto newTup = tup.map(m);
 
             ASSERT_EQ( newTup.get<0>(), 6);
             ASSERT_EQ( newTup.get<1>(), 7);
@@ -144,7 +145,16 @@ namespace test
 
         TEST(CompileTimeList, Zip)
         {
-            ASSERT_TRUE(false);
+            constexpr auto tup1 = make_list(1,2,3,4);
+            constexpr auto tup2 = make_list(5,6,7,8);
+
+            auto add = [](int a, int b){return a+b;};
+            List<int, 4> tup3 = tup1.zip(add,tup2);
+
+            ASSERT_EQ( tup3.get<0>(), 6);
+            ASSERT_EQ( tup3.get<1>(), 8);
+            ASSERT_EQ( tup3.get<2>(), 10);
+            ASSERT_EQ( tup3.get<3>(), 12);
         }
 
         TEST(CompileTimeList, Concat)
