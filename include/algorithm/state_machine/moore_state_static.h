@@ -5,6 +5,10 @@
 
 #include "algorithm/state_machine/moore_state.h"
 
+namespace algorithm
+{
+    namespace state_machine
+    {
 
 template<class TIn, long TEdges>
 class MooreStateStatic : public MooreState<TIn>
@@ -39,3 +43,6 @@ class MooreStateStatic : public MooreState<TIn>
          return this;
     }
 };
+
+}
+}

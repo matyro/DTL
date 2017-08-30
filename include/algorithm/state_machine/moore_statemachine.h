@@ -5,6 +5,11 @@
 
 #include "algorithm/state_machine/moore_state.h"
 
+namespace algorithm
+{
+    namespace state_machine
+    {
+
 template <class TIn, class ... TArgs>
 class MooreStateMachine
 {
@@ -30,10 +35,17 @@ class MooreStateMachine
             return _getStates(std::make_index_sequence< sizeof...(TArgs) >() );
         }
 
-
         void call(TIn in)
         {
             m_current = m_current->transfer(in);
             m_current->operator()();
         }
+
+        inline long size() const
+        {
+            return sizeof...(TArgs);
+        }
 };
+
+}
+}

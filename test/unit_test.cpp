@@ -10,6 +10,8 @@
 
 #include "gtest/gtest.h"
 
+#include "algorithm/moore_test.h"
+
 #include "io/socket_test.h"
 #include "io/dns_lookup_test.h"
 #include "io/client_test.h"
@@ -20,7 +22,7 @@
 #include "meta/is_callable_test.h"
 
 
-int main(int argc, char **argv) 
+int main(int argc, char **argv)
 {
     ::testing::InitGoogleTest(&argc, argv);
     return RUN_ALL_TESTS();

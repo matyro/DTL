@@ -1,5 +1,10 @@
 #pragma once
 
+namespace algorithm
+{
+    namespace state_machine
+    {
+
 template<class TIn>
 class MooreState
 {
@@ -13,3 +18,6 @@ public:
     virtual MooreState<TIn>* transfer(TIn) = 0;
 
 };
+
+}
+}

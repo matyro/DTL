@@ -5,7 +5,10 @@
 
 #include "algorithm/state_machine/moore_state.h"
 
-
+namespace algorithm
+{
+    namespace state_machine
+    {
 template<class TIn>
 class MooreStateDynamic : public MooreState<TIn>
 {
@@ -37,3 +40,5 @@ class MooreStateDynamic : public MooreState<TIn>
          return this;
     }
 };
+}
+}
