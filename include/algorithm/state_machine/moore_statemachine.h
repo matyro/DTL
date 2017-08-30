@@ -13,6 +13,8 @@ namespace algorithm
 template <class TIn, class ... TArgs>
 class MooreStateMachine
 {
+    static_assert(sizeof...(TArgs) > 0, "Number of States must be at least 1!");
+
     private:
     std::tuple<TArgs...> m_states;
 

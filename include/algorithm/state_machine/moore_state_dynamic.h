@@ -28,17 +28,26 @@ class MooreStateDynamic : public MooreState<TIn>
         m_edges.push_back( std::make_pair( i, e ) );
     }
 
+    inline long size() const override
+    {
+        return m_edges.size();
+    }
+
     MooreState<TIn>* transfer(TIn in) override
     {
         for (const auto& itr : m_edges)
         {
             if (itr.first == in)
             {
-                   return itr.second;
+                itr.second->input(in);
+                return itr.second;
             }
          }
+         this->input(in);
          return this;
     }
+
+    virtual void input(TIn in) {};
 };
 }
 }
