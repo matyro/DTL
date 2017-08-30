@@ -50,7 +50,7 @@ class MooreStateStatic : public MooreState<TIn>
          return this;
     }
 
-    virtual void input(TIn in) {};
+    virtual void input(TIn in) { ((void)(in)); };
 };
 
 }
