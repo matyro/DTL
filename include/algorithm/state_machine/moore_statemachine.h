@@ -27,16 +27,28 @@ class MooreStateMachine
     }
 
     public:
-        constexpr MooreStateMachine(TArgs... states)
+
+        /** Constructor takes one to N different States and stores them in this class
+        *   You should not access the States after they were transfered into this class
+        *   use getStates() to access and mofify each state
+        */
+        constexpr MooreStateMachine(TArgs&&... states)
         : m_states{ states... }, m_current( &std::get<0>(m_states) )
         {
+            //static_assert(std::is_convertible<, "Must inherit from class MooreState");
         }
 
+        /** Recieve pointers to access and modifie stored States
+        *   User std::tie( pointers ) to access the states
+        */
         std::tuple<TArgs* ...> getStates()
         {
             return _getStates(std::make_index_sequence< sizeof...(TArgs) >() );
         }
 
+        /** Transfer State into the next
+        *  Inputs data into the StateMachine and transfers to the next state
+        */
         void call(TIn in)
         {
             m_current = m_current->transfer(in);

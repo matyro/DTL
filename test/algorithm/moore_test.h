@@ -129,8 +129,6 @@ namespace test
 
         TEST(MooreStateMachine, DynamicMachineTest)
         {
-
-
             auto m1 = MooreStateMachine<char, testDynamic1, testDynamic2>( testDynamic1(), testDynamic2() );
 
             testDynamic1* t1;
