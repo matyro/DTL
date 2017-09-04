@@ -1,7 +1,7 @@
 /* file.h
-* this file is part of Dynstack/RemoteControl for CORSIKA
+* this file is part of DTL
 *
-* Copyright (C) <2016> <Dominik Baack>
+* Copyright (C) <2017> <Dominik Baack>
 *		All rights reserved.
 *
 * 	This software may be modified and distributed under the terms
@@ -26,17 +26,17 @@ class File
 {
 private:
 	std::fstream m_oFile;
-	
+
 	bool statusOpen;
 
 public:
-	
+
 	void open(const char* p_name);
-	
+
 	void write(const char* const p_str);
 	void write(const char* const p_str, const unsigned int p_len);
 	void write(const std::string);
-	
+
 	/// Reads the complete file into a std::string
 	/**
 	 *
@@ -47,9 +47,8 @@ public:
 
 	File(std::string p_fileName);
 	File();
-	
+
 	~File();
-	
+
 	inline bool isOpen(){return this->statusOpen;}
 };
-
