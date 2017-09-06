@@ -128,7 +128,7 @@ script:
   - cmake .. -DBUILD_TESTS=ON
   - echo "Compiler:" $COMP_XX
   - make VERBOSE=1
-  - ./unit_test
+  - ./dtl_test
 
 after_success:
   - coveralls --root .. -E ".*external.*" -E ".*CMakeFiles.*" -E ".*test/.*.cpp.*"

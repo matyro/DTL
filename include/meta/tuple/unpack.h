@@ -43,6 +43,16 @@ namespace meta
 
         public:
 
+            /// No parameter direct forward
+            /**
+            *    perfect forwards no parameter to the inherit class
+            */
+            tupleUnpack()
+            : TForward( )
+            {
+            }
+
+
             /// Single parameter direct forward
             /**
             *    perfect forwards a single parameter to the inherit class
@@ -50,34 +60,28 @@ namespace meta
             template<class TArg>
             tupleUnpack(TArg arg)
             : TForward( std::forward<TArg>(arg) )
-            {}
-
-                /// Single tuple element direct forward
-                /**
-                *    perfect forwards a single parameter to the inherit class
-                */
-                template<class TArg>
-                tupleUnpack(std::tuple<TArg> arg)
-                : TForward( std::forward<TArg>(std::get<0>(arg)) )
-                {}
-
-
-                    /// Unpack tuple interface
-                    /**
-                    *    Constructor that gets an tuple as parameter and creates an index sequence for it to forwad booth to the privat constructor
-                    *    \param args Tuple with content
-                    *    \tparam TArgs Variadic template describing the tuple content types
-                    */
-                    template<class ... TArgs>
-                    tupleUnpack(std::tuple<TArgs...> args)
-                    : tupleUnpack( std::forward<std::tuple<TArgs...>&& >(args), meta::index_sequence_from<sizeof...(TArgs)>())
-                    {}
-
-
-
-
-                    };
-
-                }
-
+            {
             }
+
+
+
+            /// Unpack tuple interface
+            /**
+            *    Constructor that gets an tuple as parameter and creates an index sequence for it to forwad booth to the privat constructor
+            *    \param args Tuple with content
+            *    \tparam TArgs Variadic template describing the tuple content types
+            */
+            template<class ... TArgs>
+            tupleUnpack(std::tuple<TArgs...> args)
+            : tupleUnpack( std::forward<std::tuple<TArgs...>&& >(args), meta::index_sequence_from<sizeof...(TArgs)>())
+            {
+            }
+
+
+
+
+        };
+
+    }
+
+}

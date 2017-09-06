@@ -24,8 +24,8 @@ set (PROJECT_SOURCE_DIR ${PROJECT_SOURCE_DIR}/src)
 # configure a header file to pass some of the CMake settings
 # to the source code
 configure_file (
-    "${PROJECT_SOURCE_DIR}/../config/config.h.in"
-    "${PROJECT_BINARY_DIR}/config.h"
+    "${PROJECT_SOURCE_DIR}/../config/dtl_config.h.in"
+    "${PROJECT_BINARY_DIR}/dtl_config.h"
 )
 
 
@@ -101,14 +101,14 @@ if(BUILD_TESTS)
     include_directories(${GTEST_INCLUDE_DIRS})
 
     # Add UnitTest
-    add_executable(unit_test ${PROJECT_DIR}/test/unit_test.cpp)
+    add_executable(dtl_test ${PROJECT_DIR}/test/unit_test.cpp)
 
-    target_link_libraries(unit_test network_lib)
+    target_link_libraries(dtl_test network_lib)
 
-    target_link_libraries(unit_test ${GTEST_BOTH_LIBRARIES})
+    target_link_libraries(dtl_test ${GTEST_BOTH_LIBRARIES})
 
     find_package (Threads)
-    target_link_libraries(unit_test ${CMAKE_THREAD_LIBS_INIT})
+    target_link_libraries(dtl_test ${CMAKE_THREAD_LIBS_INIT})
 
 
 endif(BUILD_TESTS)
