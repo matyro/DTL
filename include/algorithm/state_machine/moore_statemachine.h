@@ -55,7 +55,7 @@ class MooreStateMachine
         */
         std::tuple<TArgs* ...> getStates()
         {
-            return _getStates(meta::index_sequence_for< TArgs >() );
+            return _getStates(meta::index_sequence_from< sizeof...(TArgs) >() );
         }
 
         /** Transfer State into the next
