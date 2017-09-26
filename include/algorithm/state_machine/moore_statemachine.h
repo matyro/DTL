@@ -13,6 +13,8 @@
 #include <tuple>
 #include <utility>
 
+#include "meta/index_sequence.h"
+
 #include "algorithm/state_machine/moore_state.h"
 
 namespace algorithm
@@ -31,7 +33,7 @@ class MooreStateMachine
     MooreState<TIn>* m_current;
 
     template<std::size_t... I>
-    std::tuple<TArgs* ...> _getStates( std::index_sequence<I...> )
+    std::tuple<TArgs* ...> _getStates( meta::integer_sequence<I...> )
     {
         return std::make_tuple( &std::get<I>(m_states)... );
     }
@@ -53,7 +55,7 @@ class MooreStateMachine
         */
         std::tuple<TArgs* ...> getStates()
         {
-            return _getStates(std::make_index_sequence< sizeof...(TArgs) >() );
+            return _getStates(meta::index_sequence_for< TArgs >() );
         }
 
         /** Transfer State into the next
