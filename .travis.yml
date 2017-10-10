@@ -9,10 +9,10 @@ git:
 language: cpp
 
 compiler:
-    - '4.6'
-    - '4.9'
-    - '5'
-    - '6'
+    - 'g++-4.6'
+    - 'g++-4.9'
+    - 'g++-5'
+    - 'g++-6'
 
 env:
   matrix:
@@ -24,29 +24,20 @@ env:
     - CLANG='clang-4.0'
     - CLANG='clang-5.0'
 
+addons:
+  apt:
+    sources:
+      - george-edison55-precise-backports #cmake-3.1-3
+      - ubuntu-toolchain-r-test
+    packages:
+      - cmake-data
+      - cmake
+      - ${compiler}
+
 matrix:
-  include:
-    - os: linux
-      addons:
-        apt:
-          sources:
-            - george-edison55-precise-backports #cmake-3.1-3
-        packages:
-          - cmake-data
-          - cmake
-    - compiler:
-      addons:
-        apt:
-          sources:
-            - ubuntu-toolchain-r-test
-          packages:
-            - ${compiler}            
-      env:
-        - compiler="g++-${compiler}"
-        - MATRIX_EVAL="CC=gcc-${compiler} && CXX=g++-${compiler}"    
   allow_failures:
-      - compiler: gcc-4.6
-      - compiler: gcc-4.9
+      - compiler: '4.6'
+      - compiler: '4.9'
   fast_finish: true
 
 
