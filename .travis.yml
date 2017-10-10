@@ -42,6 +42,7 @@ matrix:
           packages:
             - ${compiler}            
       env:
+        - compiler="g++-${compiler}"
         - MATRIX_EVAL="CC=gcc-${compiler} && CXX=g++-${compiler}"    
   allow_failures:
       - compiler: gcc-4.6
@@ -50,7 +51,7 @@ matrix:
 
 
 
-before-install:
+before_install:
   - eval "${MATRIX_EVAL}"
   - sudo apt-get update -qq
   - pip install --user cpp-coveralls
