@@ -10,9 +10,33 @@ language: cpp
 
 compiler:
     - 'g++-4.6'
+    addons:
+      apt:
+        sources:
+          - ubuntu-toolchain-r-test
+        packages:
+          - g++-4.6
     - 'g++-4.9'
+    addons:
+      apt:
+        sources:
+          - ubuntu-toolchain-r-test
+        packages:
+          - g++-4.9
     - 'g++-5'
+    addons:
+      apt:
+        sources:
+          - ubuntu-toolchain-r-test
+        packages:
+          - g++-5
     - 'g++-6'
+    addons:
+      apt:
+        sources:
+          - ubuntu-toolchain-r-test
+        packages:
+          - g++-6
 
 env:
   matrix:
@@ -36,15 +60,17 @@ addons:
 
 matrix:
   allow_failures:
-      - compiler: '4.6'
-      - compiler: '4.9'
+      - compiler: 'g++-4.6'
+      - compiler: 'g++-4.9'
   fast_finish: true
 
 
 
-before_install:
-  - eval "${MATRIX_EVAL}"
+before_install:  
   - sudo apt-get update -qq
+  - sudo apt-get install -qq ${compiler}
+  - CC=${compiler}
+  - CXX=${compiler}
   - pip install --user cpp-coveralls
   - sudo apt-get install -qq libgtest-dev
 
