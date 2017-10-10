@@ -5,34 +5,32 @@ dist: precise
 language: cpp
 
 gcc:
-  - 
-  - 4.4
-  - 4.6
-  - 4.9
-  - 5
-  - 6
+  - '' 
+  - '4.4'
+  - '4.6'
+  - '4.9'
+  - '5'
+  - '6'
 
 clang:
-  - 
-  - 3.6
-  - 3.7
-  - 3.8
+  - ''
+  - '3.6'
+  - '3.7'
+  - '3.8'
 
 matrix:
   include:
   - gcc: ""
-      addons:
-        apt:
-        sources:
-          - ubuntu-toolchain-r-test
-        packages:
-        - g++4.6
-        - automake
-          env:
-          - COMP_XX=g++-${gcc}
-          - COMP_C=gcc-${gcc}
-          - CXX=g++-${gcc}
-          - CC=gcc-${gcc}
+    sources:
+    - ubuntu-toolchain-r-test
+    packages:
+    - g++4.6
+    - automake
+    env:
+    - COMP_XX=g++-${gcc}
+    - COMP_C=gcc-${gcc}
+    - CXX=g++-${gcc}
+    - CC=gcc-${gcc}
 
 #- compiler: gcc-4.6
 #      addons:
