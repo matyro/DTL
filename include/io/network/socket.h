@@ -9,7 +9,7 @@
  */
 #pragma once
 
-#ifdef __linux__
+#if defined(__unix__) || defined(__APPLE__)
 #include <netinet/in.h>
 #elif _WIN32
 #include <winsock2.h>
