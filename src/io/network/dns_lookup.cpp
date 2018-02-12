@@ -8,7 +8,7 @@
  * 	of the LGPL license. See the LICENSE file for details.
  */
 
-#ifdef __linux__
+#if defined(__unix__) || defined(__APPLE__)
 #include <sys/socket.h>
 #include <errno.h> //For errno - the error number
 #include <netdb.h> //hostent
@@ -33,7 +33,7 @@
 	{
 		namespace network
 		{
-#ifdef __linux__
+#if defined(__unix__) || defined(__APPLE__)
 			std::string hostname_to_ip(const std::string p_hostname)
 			{
 				struct addrinfo hints;
